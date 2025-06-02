@@ -15,9 +15,9 @@ def load_gpt2output_dataset(base_dir='data/GPT2OutputDataset'):
                 continue
 
             if 'webtext' in filename:
-                df['label'] = 'human'
+                df['label'] = 0
             else:
-                df['label'] = 'AI'
+                df['label'] = 1
 
             df = df.rename(columns={'text': 'Generation'})  # 텍스트 컬럼명 정리
             all_data.append(df)

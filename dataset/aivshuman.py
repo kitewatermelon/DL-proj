@@ -9,7 +9,7 @@ def load_aivshuman_dataset(csv_path='./data/AI_Human.csv'):
 
     if 'text' in df.columns and 'generated' in df.columns:
         df = df.rename(columns={'text': 'Generation'})
-        df['label'] = df['generated'].apply(lambda x: 'human' if x == 0 else 'AI')
+        df['label'] = df['generated'].astype(int)
         df = df.drop(columns=['generated'])
     else:
         raise KeyError("Expected columns 'text' and 'generated' not found.")

@@ -13,11 +13,11 @@ def load_daigt_dataset(csv_path='./data/daigt_external_dataset.csv'):
     # 두 개의 데이터프레임 생성
     human_df = df[['text']].copy()
     human_df.rename(columns={'text': 'Generation'}, inplace=True)
-    human_df['label'] = 'human'
+    human_df['label'] = 0
 
     ai_df = df[['source_text']].copy()
     ai_df.rename(columns={'source_text': 'Generation'}, inplace=True)
-    ai_df['label'] = 'AI'
+    ai_df['label'] = 1
 
     # 병합 및 셔플
     full_df = pd.concat([human_df, ai_df], ignore_index=True)

@@ -16,6 +16,7 @@ def load_gptwritingprompt_dataset(csv_path='./data/gpt-writing-prompts.csv'):
     })
 
     full_df.dropna(inplace=True)
+    full_df['label'] = full_df['label'].apply(lambda x: 0 if str(x).strip().lower() == 'human' else 1).astype(int)
 
     print(f"[✅ GPTWritingPrompt] 데이터 로드 완료: {len(full_df):,} samples")
     return full_df

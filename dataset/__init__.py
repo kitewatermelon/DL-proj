@@ -50,6 +50,6 @@ def load_all_datasets(dataset_names, train_ratio=0.7, valid_ratio=0.15, test_rat
     train_df, valid_df = train_test_split(
         train_val_df, test_size=valid_size, random_state=42, stratify=train_val_df['label']
     )
-
+    print(train_df['label'].unique())
     print(f"[✅] 데이터 분할 완료: Train={len(train_df):,} / Valid={len(valid_df):,} / Test={len(test_df):,}")
     return train_df, valid_df, test_df

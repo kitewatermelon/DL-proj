@@ -44,5 +44,5 @@ python main.py --dataset all
 
 # train-valid-test split
 python main.py --dataset all --train_ratio 0.8 --valid_ratio 0.1 --test_ratio 0.1
-column name: 'Generation': 생성된 텍스트, 'label': human or AI
+column name: 'Generation': 생성된 텍스트, 'label': 0(human) or 1(AI)
 ```

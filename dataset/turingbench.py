@@ -27,7 +27,7 @@ def load_turingbench_dataset(root_path='./data/TuringBench'):
 
     # label 전처리
     if 'label' in full_df.columns:
-        full_df['label'] = full_df['label'].apply(lambda x: 'human' if str(x).strip().lower() == 'human' else 'AI')
+        full_df['label'] = full_df['label'].apply(lambda x: 0 if str(x).strip().lower() == 'human' else 1)
 
     print(f"[✅ TuringBench] 전체 데이터 로드 완료: 총 {len(full_df):,}개 샘플")
 
