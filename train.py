@@ -8,14 +8,14 @@ from models.bert_classifier import BertClassifier
 from dataset_class import TextDataset
 from visualize import plot_loss_accuracy
 
-def train_model(train_df, valid_df, model_name='bert-base-uncased', epochs=3, batch_size=16, lr=2e-5, save_path="best_model.pt"):
+def train_model(train_df, valid_df, model_name='bert-base-uncased', epochs=3, batch_size=16, lr=2e-5, save_path="best_model.pt", device='cuda'):
     tokenizer = BertTokenizer.from_pretrained(model_name)
-    model = BertClassifier(model_name).cuda()
+    model = BertClassifier(model_name).to(device)
 
     train_dataset = TextDataset(train_df, tokenizer)
     valid_dataset = TextDataset(valid_df, tokenizer)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    valid_loader = DataLoader(valid_dataset, batch_size=batch_size)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, num_workers=0)
 
     optimizer = AdamW(model.parameters(), lr=lr)
     lr_scheduler = get_scheduler("linear", optimizer=optimizer, num_warmup_steps=0, num_training_steps=len(train_loader)*epochs)
@@ -29,9 +29,9 @@ def train_model(train_df, valid_df, model_name='bert-base-uncased', epochs=3, ba
         model.train()
         total_loss = 0
         for batch in tqdm(train_loader, desc=f"[Train Epoch {epoch+1}]"):
-            input_ids = batch['input_ids'].cuda()
-            attention_mask = batch['attention_mask'].cuda()
-            labels = batch['label'].cuda()
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
 
             outputs = model(input_ids, attention_mask)
             loss = loss_fn(outputs, labels)
@@ -51,9 +51,9 @@ def train_model(train_df, valid_df, model_name='bert-base-uncased', epochs=3, ba
         preds, truths = [], []
         with torch.no_grad():
             for batch in valid_loader:
-                input_ids = batch['input_ids'].cuda()
-                attention_mask = batch['attention_mask'].cuda()
-                labels = batch['label'].cuda()
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                labels = batch['label'].to(device)
                 outputs = model(input_ids, attention_mask)
                 preds.extend(torch.sigmoid(outputs).cpu().numpy())
                 truths.extend(labels.cpu().numpy())

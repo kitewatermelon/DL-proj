@@ -5,21 +5,21 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from dataset_class import TextDataset
 from models.bert_classifier import BertClassifier
 
-def test_model(test_df, model_path="best_model.pt", model_name='bert-base-uncased', batch_size=16):
+def test_model(test_df, model_path="best_model.pt", model_name='bert-base-uncased', batch_size=16, device='cuda'):
     tokenizer = BertTokenizer.from_pretrained(model_name)
-    model = BertClassifier(model_name).cuda()
+    model = BertClassifier(model_name).to(device)
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
     test_dataset = TextDataset(test_df, tokenizer)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=0)
 
     preds, truths = [], []
     with torch.no_grad():
         for batch in test_loader:
-            input_ids = batch['input_ids'].cuda()
-            attention_mask = batch['attention_mask'].cuda()
-            labels = batch['label'].cuda()
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
 
             outputs = model(input_ids, attention_mask)
             preds.extend(torch.sigmoid(outputs).cpu().numpy())
