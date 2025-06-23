@@ -5,3 +5,4 @@ venv/
 dataset.csv
 tokenized_*
 result*
+logs*.txt
