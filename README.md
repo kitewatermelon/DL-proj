@@ -30,19 +30,3 @@ data/
 ├── daigt_external_dataset.csv
 └── gpt-writing-prompts.csv
 ```
-### Dataset 생성
-```
-# 특정 데이터셋만 사용할 경우
-python main.py --dataset turingbench
-python main.py --dataset aivshuman
-python main.py --dataset daigt
-python main.py --dataset gptwriting
-python main.py --dataset gpt2output
-
-# 모두 합쳐서 사용할 경우
-python main.py --dataset all
-
-# train-valid-test split
-python main.py --dataset all --train_ratio 0.8 --valid_ratio 0.1 --test_ratio 0.1
-column name: 'Generation': 생성된 텍스트, 'label': 0(human) or 1(AI)
-```
