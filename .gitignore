@@ -4,3 +4,4 @@ venv/
 *.pt
 dataset.csv
 tokenized_*
+result*
