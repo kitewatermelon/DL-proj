@@ -38,17 +38,17 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
 
     training_args = TrainingArguments(
         output_dir=f"./results_{version}",
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         num_train_epochs=3,
-        per_device_train_batch_size=16,
+        per_device_train_batch_size=32,
         per_device_eval_batch_size=32,
         learning_rate=2e-5,
-        fp16=torch.cuda.is_available(),
         logging_dir=f"./logs_{version}",
         save_total_limit=1,
         load_best_model_at_end=True,
-        metric_for_best_model="f1"
+        metric_for_best_model="f1",
+        fp16=True 
     )
 
     trainer = Trainer(
