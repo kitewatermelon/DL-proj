@@ -7,3 +7,4 @@ tokenized_*
 result*
 logs*.txt
 results_cleaned/
+*.safetensors
