@@ -9,3 +9,4 @@ logs*.txt
 results_cleaned/
 *.safetensors
 plot/
+models/

@@ -36,19 +36,36 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
             "f1": f1_score(labels, preds)
         }
 
+    # training_args = TrainingArguments(
+    #     output_dir=f"./results_{version}",
+    #     eval_strategy="epoch",
+    #     save_strategy="epoch",
+    #     num_train_epochs=3,
+    #     per_device_train_batch_size=32,
+    #     per_device_eval_batch_size=32,
+    #     learning_rate=2e-5,
+    #     logging_dir=f"./logs_{version}",
+    #     save_total_limit=1,
+    #     load_best_model_at_end=True,
+    #     metric_for_best_model="f1",
+    #     fp16=True 
+    # )
     training_args = TrainingArguments(
         output_dir=f"./results_{version}",
         eval_strategy="epoch",
         save_strategy="epoch",
         num_train_epochs=3,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=32,
         learning_rate=2e-5,
+        weight_decay=0.01,
+        warmup_steps=500,
+        lr_scheduler_type="linear",
         logging_dir=f"./logs_{version}",
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="f1",
-        fp16=True 
+        fp16=True,
+        gradient_accumulation_steps=2,
+        label_smoothing_factor=0.1
     )
 
     trainer = Trainer(
@@ -79,5 +96,5 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
     if train_losses is not None:
         plot_loss_curve(train_losses, train_losses, f"plot/loss_curve_{version}.png", f"Loss Curve - {version}")
 
-    torch.save(model.state_dict(), f"best_model_{version}.pt")
+    torch.save(model.state_dict(), f"best_model_{version}_optimize.pt")
     print(f"✅ [{version}] 모델 저장 완료")
