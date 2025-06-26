@@ -1,0 +1,7 @@
+Model Pair,t-statistic,p-value,Significant,Metric
+BERT vs Optimized Model,-1.578406087507291,0.14892849782801573,No,Accuracy
+BERT vs Logistic Regression,130.97687745256184,4.479064240671171e-16,Yes,Accuracy
+BERT vs SVM,117.45042392696733,1.194045185378301e-15,Yes,Accuracy
+Optimized Model vs Logistic Regression,124.78485748573223,6.924481353168552e-16,Yes,Accuracy
+Optimized Model vs SVM,111.48914034726081,1.9076195868929188e-15,Yes,Accuracy
+Logistic Regression vs SVM,-5.310063800208564,0.0004873338098850265,Yes,Accuracy

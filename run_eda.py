@@ -5,20 +5,9 @@ import seaborn as sns
 from wordcloud import WordCloud
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
-
-sns.set(style="whitegrid")
-
-# 디렉토리 생성
-os.makedirs("eda_outputs", exist_ok=True)
-os.makedirs("eda_outputs/eda_plots", exist_ok=True)
+from dataset import load_all_datasets
 
 def run_text_eda(df, output_dir="eda_outputs"):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    from wordcloud import WordCloud
-    from collections import Counter
-    from sklearn.feature_extraction.text import CountVectorizer
-
     sns.set(style="whitegrid")
 
     os.makedirs(output_dir, exist_ok=True)
@@ -76,10 +65,6 @@ def run_text_eda(df, output_dir="eda_outputs"):
     sample_df.to_csv(f"{output_dir}/sample_texts_by_label.csv", index=False)
 
 def plot_top_words(df, label=None, output_dir="eda_outputs", save_name="default", n=20):
-    from wordcloud import WordCloud
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    from collections import Counter
 
     if label is not None:
         text = ' '.join(df[df['label'] == label]['Generation'])
@@ -109,10 +94,6 @@ def plot_top_words(df, label=None, output_dir="eda_outputs", save_name="default"
 
 
 def plot_ngrams(df, output_dir="eda_outputs", ngram_range=(2, 2), top_n=20):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    from sklearn.feature_extraction.text import CountVectorizer
-
     vec = CountVectorizer(ngram_range=ngram_range).fit(df['Generation'])
     bag_of_words = vec.transform(df['Generation'])
     sum_words = bag_of_words.sum(axis=0)
@@ -130,23 +111,23 @@ def plot_ngrams(df, output_dir="eda_outputs", ngram_range=(2, 2), top_n=20):
     plt.savefig(f"{output_dir}/eda_plots/top_{ngram_range[0]}gram.png")
     plt.close()
 
+if __name__ =="__main__":
+    sns.set(style="whitegrid")
 
-from dataset import load_all_datasets
-import pandas as pd
-import os
+    # 디렉토리 생성
+    os.makedirs("eda_outputs", exist_ok=True)
+    os.makedirs("eda_outputs/eda_plots", exist_ok=True)
 
-DATASETS = ['daigt', 'turingbench', 'aivshuman', 'gptwriting', 'gpt2output']
+    DATASETS = ['daigt', 'turingbench', 'aivshuman', 'gptwriting', 'gpt2output']
 
-for dataset_name in DATASETS:
-    # 1. 데이터 로드
-    train_df, valid_df, test_df = load_all_datasets([dataset_name])
-    full_df = pd.concat([train_df, valid_df, test_df], ignore_index=True)
+    for dataset_name in DATASETS:
+        # 1. 데이터 로드
+        train_df, valid_df, test_df = load_all_datasets([dataset_name])
+        full_df = pd.concat([train_df, valid_df, test_df], ignore_index=True)
 
-    # 2. 출력 경로 생성
-    output_dir = f"eda_outputs/{dataset_name}"
-    os.makedirs(f"{output_dir}/eda_plots", exist_ok=True)
+        # 2. 출력 경로 생성
+        output_dir = f"eda_outputs/{dataset_name}"
+        os.makedirs(f"{output_dir}/eda_plots", exist_ok=True)
 
-    # 3. EDA 실행
-    run_text_eda(full_df, output_dir=output_dir)
-
-
+        # 3. EDA 실행
+        run_text_eda(full_df, output_dir=output_dir)

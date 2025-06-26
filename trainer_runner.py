@@ -7,7 +7,7 @@ from transformers import (
 from sklearn.metrics import accuracy_score, f1_score
 from visualize import plot_confusion_matrix, plot_roc_curve, plot_pr_curve, plot_loss_curve
 
-def train_and_evaluate(version, train_df, val_df, test_df, device):
+def train_and_evaluate(version, train_df, val_df, test_df, device, opt):
     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
     def tokenize_fn(batch):
@@ -17,7 +17,6 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
     val_ds = Dataset.from_pandas(val_df).map(tokenize_fn, batched=True)
     test_ds = Dataset.from_pandas(test_df).map(tokenize_fn, batched=True)
 
-    # 재할당 필수! (그래야 실제로 반영됨)
     train_ds = train_ds.remove_columns(["text"]).rename_column("label", "labels")
     val_ds = val_ds.remove_columns(["text"]).rename_column("label", "labels")
     test_ds = test_ds.remove_columns(["text"]).rename_column("label", "labels")
@@ -36,38 +35,43 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
             "f1": f1_score(labels, preds)
         }
 
-    # training_args = TrainingArguments(
-    #     output_dir=f"./results_{version}",
-    #     eval_strategy="epoch",
-    #     save_strategy="epoch",
-    #     num_train_epochs=3,
-    #     per_device_train_batch_size=32,
-    #     per_device_eval_batch_size=32,
-    #     learning_rate=2e-5,
-    #     logging_dir=f"./logs_{version}",
-    #     save_total_limit=1,
-    #     load_best_model_at_end=True,
-    #     metric_for_best_model="f1",
-    #     fp16=True 
-    # )
-    training_args = TrainingArguments(
-        output_dir=f"./results_{version}",
-        eval_strategy="epoch",
-        save_strategy="epoch",
-        num_train_epochs=3,
-        learning_rate=2e-5,
-        weight_decay=0.01,
-        warmup_steps=500,
-        lr_scheduler_type="linear",
-        logging_dir=f"./logs_{version}",
-        save_total_limit=1,
-        load_best_model_at_end=True,
-        metric_for_best_model="f1",
-        fp16=True,
-        gradient_accumulation_steps=2,
-        label_smoothing_factor=0.1
-    )
+    if opt:
+        training_args = TrainingArguments(
+            output_dir=f"./results_{version}_opt",
+            eval_strategy="epoch",
+            save_strategy="epoch",
+            num_train_epochs=3,
+            per_device_train_batch_size=32,
+            per_device_eval_batch_size=32,
 
+            learning_rate=2e-5,
+            weight_decay=0.01,
+            warmup_steps=500,
+            lr_scheduler_type="linear",
+            logging_dir=f"./logs_{version}_opt",
+            save_total_limit=1,
+            load_best_model_at_end=True,
+            metric_for_best_model="f1",
+            fp16=True,
+            gradient_accumulation_steps=2,
+            label_smoothing_factor=0.1
+        )
+    else:
+        training_args = TrainingArguments(
+            output_dir=f"./results_{version}",
+            eval_strategy="epoch",
+            save_strategy="epoch",
+            num_train_epochs=3,
+            per_device_train_batch_size=32,
+            per_device_eval_batch_size=32,
+            learning_rate=2e-5,
+            logging_dir=f"./logs_{version}",
+            save_total_limit=1,
+            load_best_model_at_end=True,
+            metric_for_best_model="f1",
+            fp16=True 
+        )
+    
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -80,7 +84,6 @@ def train_and_evaluate(version, train_df, val_df, test_df, device):
 
     # train/val loss 기록 가져오기 (로그에서 확인 가능)
     train_losses = train_result.training_loss_history if hasattr(train_result, 'training_loss_history') else None
-    # Trainer 기본 리턴에는 없어서 직접 콜백 구현 필요 (여기서는 생략 가능)
 
     results = trainer.predict(test_ds)
     logits = torch.tensor(results.predictions)

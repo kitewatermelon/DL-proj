@@ -7,7 +7,6 @@
 정치우 - AI Vs Human Text: https://www.kaggle.com/datasets/shanegerami/ai-vs-human-text?resource=download   
 최민서 - GPT2 Output Dataset: https://github.com/openai/gpt-2-output-dataset/blob/master/download_dataset.py (small 계열만 download)
 
-
 ---
 ```
 data 폴더 구조
@@ -29,4 +28,15 @@ data/
 │   └── TT_xlnet_large
 ├── daigt_external_dataset.csv
 └── gpt-writing-prompts.csv
+```
+
+```
+#How to run bert
+python run.py --version cleaned --cuda 0 --opt 1
+Arguments info:   
+    --version (cleaned or plain): 불용어 처리 할 거면 cleaned 안하고 돌릴거면 plain
+    --cuda (int): 사용할 GPU 정보
+    --opt (0 or 1): 최적화 여부(0=false, 1=True)
+#How to run ML model
+python baseline_model.py
 ```

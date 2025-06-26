@@ -1,11 +1,9 @@
 import os
 import time
 import joblib
-from data_utils import load_balanced_dataset  # 함수명은 그대로 유지하세요
+from data_utils import load_balanced_dataset
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import accuracy_score, f1_score
@@ -13,15 +11,12 @@ from visualize import plot_confusion_matrix, plot_roc_curve, plot_pr_curve
 
 # 모델 정의
 models = {
-    # "logistic": LogisticRegression(max_iter=1000),
-    # "svm": CalibratedClassifierCV(LinearSVC()),
-    "random_forest": RandomForestClassifier(),
-    "naive_bayes": MultinomialNB(),
-}
+    "logistic": LogisticRegression(max_iter=1000),
+    "svm": CalibratedClassifierCV(LinearSVC()),
+ }
 
-versions = ["cleand", "plain"]  # 여러 버전을 비교하고 싶을 때 리스트 확장 가능
+versions = ["cleaned"]
 
-# 폴더 생성
 os.makedirs("plot", exist_ok=True)
 os.makedirs("models", exist_ok=True)
 
@@ -44,10 +39,8 @@ for version in versions:
         elapsed = time.time() - start_time
         print(f"⏱️ 학습 시간: {elapsed:.2f}초")
 
-        # 예측
         y_pred = model.predict(X_test)
 
-        # 확률 예측 (없으면 예외처리)
         try:
             y_prob = model.predict_proba(X_test)[:, 1]
         except AttributeError:
@@ -64,9 +57,15 @@ for version in versions:
         joblib.dump(model, model_path)
         print(f"💾 모델 저장 완료: {model_path}")
 
+
         # 시각화 저장
         base_path = f"plot/{name}_{version}"
         plot_confusion_matrix(y_test, y_pred, f"{base_path}_confusion_matrix.png", f"Confusion Matrix - {version} / {name}")
         plot_roc_curve(y_test, y_prob, f"{base_path}_roc_curve.png", f"ROC Curve - {version} / {name}")
         plot_pr_curve(y_test, y_prob, f"{base_path}_pr_curve.png", f"PR Curve - {version} / {name}")
         print(f"📊 시각화 저장 완료: {base_path}_*.png")
+
+    # 벡터라이저 저장
+    vectorizer_path = f"models/tfidf_vectorizer_{version}.pkl"
+    joblib.dump(vectorizer, vectorizer_path)
+    print(f"💾 벡터라이저 저장 완료: {vectorizer_path}")

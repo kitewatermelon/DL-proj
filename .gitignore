@@ -4,9 +4,8 @@ venv/
 *.pt
 dataset.csv
 tokenized_*
-result*
+results*
 logs*.txt
 results_cleaned/
 *.safetensors
-plot/
 models/
